@@ -1,5 +1,6 @@
+import { Link } from "react-router-dom"
 
-const Card=({image,title, price})=>{
+const Card=({id,image,title, price})=>{
     return(
         <>
         <div className="grid justify-center gap-4  py-[10%]">
@@ -34,7 +35,7 @@ const Card=({image,title, price})=>{
                     </div>
                     <div className="flex items-center justify-between">
                         <span className="text-3xl font-bold text-gray-900 dark:text-white">{price}</span>
-                        <button className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Add to cart</button>
+                        <Link to={`/product-details/${id}`} className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Viw Details</Link>
                     </div>
                 </div>
             </div>
