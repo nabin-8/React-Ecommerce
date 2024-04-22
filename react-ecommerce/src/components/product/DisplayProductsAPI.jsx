@@ -35,6 +35,7 @@ const DisplayProductAPI=()=>{
                             image={product.images[0]}
                             title={product.title}
                             price={product.price}
+                            id={product.id}
                         />
                     })
 
