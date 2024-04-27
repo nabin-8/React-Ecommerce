@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import Card from "../card/Card";
+import parseImageUrl from "../../utils/imageParser.utils";
 
 const DisplayProductAPI=()=>{
 
@@ -27,12 +28,12 @@ const DisplayProductAPI=()=>{
 
     return(
         <>
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
                 {
                     products.map((product) =>{
                         return <Card
                             key={product.id}
-                            image={product.images[0]}
+                            image={parseImageUrl( product.images[0])}
                             title={product.title}
                             price={product.price}
                             id={product.id}
