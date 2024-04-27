@@ -3,9 +3,9 @@ import { Link } from "react-router-dom"
 const Card=({id,image,title, price})=>{
     return(
         <>
-        <div className="grid justify-center gap-4  py-[10%]">
+        <div className="flex justify-center gap-2 py-4 ">
             
-            <div className="w-full max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+            <div className=" max-w-xs bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
                 <a href="#">
                     <img className=" p-8 rounded-t-lg" src={image} alt="product image" />
                 </a>
