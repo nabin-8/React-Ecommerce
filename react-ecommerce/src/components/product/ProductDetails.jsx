@@ -1,23 +1,86 @@
 import axios from "axios"
 import { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import Card from "../card/Card";
+import parseImageUrl from "../../utils/imageParser.utils";
 
 const ProductDetails=()=>{
+    const { productId } = useParams();
     const [product, setProduct]=useState()
+    const [moreCategoryProducts, setMoreCategoryProducts] = useState([]);
+    const [isClicked, setIsClicked] = useState(false);
+    const [cartData, setCartData] = useState();
 
     const params=useParams()
     const id=params.productId
-
-    useEffect(()=>{
+    useEffect(() => {
         axios.get(`https://api.escuelajs.co/api/v1/products/${id}`)
-        .then(res=>{
-            setProduct(res.data)
-        })
-        .catch(err=>console.log(err))
-    })
+          .then(res => setProduct(res.data))
+          .catch(err => console.error("Error fetching product:", err));
+    
+        axios.get(`https://api.escuelajs.co/api/v1/products/?categoryId=${product?.category?.id}`)
+          .then(res => {
+            const filteredProducts = res.data.filter(p => p.id != id); // Filter out the current product
+            setMoreCategoryProducts(filteredProducts);
+          })
+          .catch(err => console.error("Error fetching more category products:", err));
+      }, [productId, product?.category?.id]);
+
+    // useEffect(()=>{
+    //     axios.get(`https://api.escuelajs.co/api/v1/products/${id}`)
+    //     .then(res=>{
+    //         setProduct(res.data)
+    //         const catId=res.data?.category.id
+    //         axios.get(`https://api.escuelajs.co/api/v1/products/?categoryId=${catId}`)
+    //         .then(res=>{
+    //             setMoreCategoryProducts(res.data)
+    //         })
+    //     })
+    //     .catch(err=>console.log(err))
+    // })
+
+    // const addToCard=()=> toast.success(`${product.title} added to card`)
+
+    useEffect(() => {
+        if (isClicked) {
+          const currCartData = JSON.parse(localStorage.getItem("cart")) || "";
+          if (currCartData && currCartData.find((e) => e === cartData)) {
+            toast.error("Item Already in Cart!",{
+                position:"top-right",
+                autoClose:2000,
+                draggable:true
+            });
+          } else {
+            const updatedCartData = [...currCartData, cartData];
+            localStorage.setItem("cart", JSON.stringify(updatedCartData));
+            toast.success("Cart Updated Successfully",{
+                position:"top-right",
+                autoClose:2000,
+                draggable:true
+            });
+          }
+          setCartData([]);
+        }
+    
+        setIsClicked(false);
+      }, [cartData]);
+
+      useEffect(() => {
+        console.log("Actual Data:");
+        console.log(moreCategoryProducts);
+      }, [moreCategoryProducts]);
+    
+      const cartUpdater = () => {
+        console.log("click");
+        setIsClicked(true);
+        setCartData(id);
+      };
 
     return(
         <>
+            <ToastContainer theme="colored" position="bottom-center" />
             {product ?( <div classNameName="container">
             <section className="text-gray-700 body-font overflow-hidden bg-white">
             <div className="container px-5 py-24 mx-auto">
@@ -90,7 +153,7 @@ const ProductDetails=()=>{
                     </div>
                     <div className="flex">
                     <span className="title-font font-medium text-2xl text-gray-900">${product.price}</span>
-                    <button className="flex ml-auto text-white bg-red-500 border-0 py-2 px-6 focus:outline-none hover:bg-red-600 rounded">Add to Card</button>
+                    <button onClick={cartUpdater} className="flex ml-auto text-white bg-red-500 border-0 py-2 px-6 focus:outline-none hover:bg-red-600 rounded">Add to Card</button>
                     <button className="rounded-full w-10 h-10 bg-gray-200 p-0 border-0 inline-flex items-center justify-center text-gray-500 ml-4">
                         <svg fill="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" className="w-5 h-5" viewBox="0 0 24 24">
                         <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"></path>
@@ -105,6 +168,21 @@ const ProductDetails=()=>{
             :
             (<p>No Valid Image</p>)
             }
+                <p className=" text-center text-green-700">Recommended Products</p>
+                <hr />
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+                {
+                    moreCategoryProducts.map((product) =>{
+                        return <Card
+                            key={product.id}
+                            image={parseImageUrl( product.images[0])}
+                            title={product.title}
+                            price={product.price}
+                            id={product.id}
+                        />
+                    })
+                }
+            </div>
         </>
     )
 }
